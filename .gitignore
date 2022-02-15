@@ -1,13 +1,10 @@
-#AIM login credentials
-login.txt
-
 #CSV files
 *.csv
 
 #Folders
-asset_docs/*
-utils/*
-csv/*
+aim_automation/asset_docs/*
+aim_automation/utils/*
+aim_automation/csv/*
 
 #Environments
 .venv/
@@ -17,3 +14,4 @@ __pycache__
 
 #Tests folder
 tests/
+
