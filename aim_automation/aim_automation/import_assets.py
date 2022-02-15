@@ -40,7 +40,7 @@ tags = []
 
 def initializeDriver():
     """
-    Initialze Chrome webdriver
+    Initialize Chrome webdriver
     Params:
         None
     Returns:
@@ -150,7 +150,7 @@ def importAssets(credentials, asset):
 
             return doc_id
         except:
-            console.log('An error has occured while uploading documents. Aborting...', style='bold red')
+            console.log('An error has occurred while uploading documents. Aborting...', style='bold red')
             sys.exit(1)
 
     def checkAsset(tag):
@@ -442,7 +442,7 @@ def parseCSV(csvFile):
                 AssetArray.append(obj)
         return AssetArray
     except:
-        console.print('An error has occured while reading the CSV file.', style='bold red')
+        console.print('An error has occurred while reading the CSV file.', style='bold red')
         pass
 
 def main(argv):

@@ -34,7 +34,7 @@ END = 0
 
 def initializeDriver():
     """
-    Initialze Chrome webdriver
+    Initialize Chrome webdriver
     Params:
         None
     Returns:
@@ -94,7 +94,7 @@ def updateRate(credentials, empName, empODIN, oldRate, newRate, endDate, startDa
     Updates the SOPE rates of the employee by ending the old rate and
     creating a new entry for the new SOPE rate.
     Params:
-        crednetials <obj> : login credentials
+        credentials <obj> : login credentials
         empODIN <string> : employee ODIN ID
         oldRate <string> : current SOPE rate
         newRate <string> : new SOPE rate being set
@@ -110,7 +110,7 @@ def updateRate(credentials, empName, empODIN, oldRate, newRate, endDate, startDa
         name and ODIN to select the correct profile.
         Params:
             empName <string> : Employee's first and last name
-            empODIN <string> : Enployee's ODIN ID
+            empODIN <string> : Employee's ODIN ID
         Returns:
             None
         """
@@ -338,7 +338,7 @@ def parseCSV(csvFile):
             fields = next(csvreader)
             for row in csvreader:
                 rows.append(row)
-        # Set Index so we know what coloum to find information
+        # Set Index so we know what column to find information
         empIdx = fields.index('Employee')
         odinIdx = fields.index('ODIN')
         typeIdx = fields.index('Type')
@@ -361,7 +361,7 @@ def parseCSV(csvFile):
                 SOPEarray.append(obj)
         return SOPEarray
     except:
-        console.print('An error has occured while reading the CSV file.', style='bold red')
+        console.print('An error has occurred while reading the CSV file.', style='bold red')
         pass
 
 def main(argv):

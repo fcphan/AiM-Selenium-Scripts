@@ -36,7 +36,7 @@ START = 1
 
 def initializeDriver():
     """
-    Initialze Chrome webdriver
+    Initialize Chrome webdriver
     Params:
         None
     Returns:
@@ -92,7 +92,7 @@ def decodePassword(passFile):
 
 def deactivate_employee(credentials, empName, odin, endDate):
     """
-    Deactives the following:
+    Deactivates the following:
     - User Security record
         - Clears role and requestor
     - Requestor Account
@@ -135,8 +135,8 @@ def deactivate_employee(credentials, empName, odin, endDate):
             
             return "".join(pwd)
 
-        sysAdimn = driver.find_element(by='id', value='mainForm:menuListMain:SYSADMN')
-        sysAdimn.click()
+        sysAdmin = driver.find_element(by='id', value='mainForm:menuListMain:SYSADMN')
+        sysAdmin.click()
         time.sleep(1)
         usrSec = driver.find_element(by='id', value='mainForm:menuList:search_USER_ADMIN_VIEW')
         usrSec.click()
@@ -149,8 +149,8 @@ def deactivate_employee(credentials, empName, odin, endDate):
         record = driver.find_element(by='id', value='mainForm:browse:0:ae_s_sec_c_login')
         record.click()
         # Edit User Security
-        edtiBtn = driver.find_element(by='id', value='mainForm:buttonPanel:edit')
-        edtiBtn.click()
+        editBtn = driver.find_element(by='id', value='mainForm:buttonPanel:edit')
+        editBtn.click()
         time.sleep(2)
         # Set Password field with new, randomly generated password
         newPwd = generate_password()
@@ -252,7 +252,7 @@ def deactivate_employee(credentials, empName, odin, endDate):
         name and ODIN to select the correct profile.
         Params:
             empName <string> : Employee's first and last name
-            empODIN <string> : Enployee's ODIN ID
+            empODIN <string> : Employee's ODIN ID
         Returns:
             None
         """

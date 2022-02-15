@@ -8,5 +8,8 @@ aim_automation/test_assets.csv
 #Asset docs
 aim_automation/asset_docs/*
 
+#Environments
+.venv/
+
 #pycache
 __pycache__
