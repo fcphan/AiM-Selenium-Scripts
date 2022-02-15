@@ -6,6 +6,10 @@ aim_automation/asset_docs/*
 aim_automation/utils/*
 aim_automation/csv/*
 
+#Add dummy file to ensure tracking of folders
+!aim_automation/asset_docs/.gitkeep
+!aim_automation/utils/.gitkeep
+!aim_automation/csv/.gitkeep
 #Environments
 .venv/
 
