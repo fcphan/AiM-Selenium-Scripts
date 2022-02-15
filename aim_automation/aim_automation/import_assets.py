@@ -46,23 +46,27 @@ def initializeDriver():
     Returns:
         driver <webdriver> : Chrome webdriver with specified options
     """
-    # Chrome Driver Options
-    options = webdriver.ChromeOptions()
-    # options.add_argument('--headless')
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-extensions')
-    options.add_argument('--kiosk-printing')
-    options.add_argument('--test-type')
-    options.add_argument('--disable-gpu')
+    try:
+        # Chrome Driver Options
+        options = webdriver.ChromeOptions()
+        # options.add_argument('--headless')
+        options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-extensions')
+        options.add_argument('--kiosk-printing')
+        options.add_argument('--test-type')
+        options.add_argument('--disable-gpu')
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-    # Create a new driver
-    chromedriver = os.path.join(os.path.dirname(os.getcwd()), 'chromedriver')
-    driver = webdriver.Chrome(executable_path=chromedriver, options=options)
-    driver.set_page_load_timeout(MAX_WAIT)
-    driver.set_script_timeout(MAX_WAIT)
-
-    return driver
+        # Create a new driver
+        chromedriver = os.path.join(os.path.dirname(os.getcwd()), 'chromedriver')
+        driver = webdriver.Chrome(executable_path=chromedriver, options=options)
+        driver.set_page_load_timeout(MAX_WAIT)
+        driver.set_script_timeout(MAX_WAIT)
+        return driver
+    except:
+        console.print("Error: Failed to initialize webdriver.", style='bold red')
+        sys.exit(1)
 
 def decodePassword(passFile):
     """
@@ -79,20 +83,25 @@ def decodePassword(passFile):
             self.pwd = ''
         def __str__(self) -> str:
             return """Username: %s \nPassword: %s""" % (self.usr, self.pwd)
-    # Open file and read in the encrypted password
-    f = open(passFile, 'r')
-    data = f.read().splitlines()
-    f.close()
-    username = data[0]
-    encryption = data[1]
-    # Decode the password and return the plaintext to caller
-    encoded = encryption.encode('ascii')
-    decoded = base64.b64decode(encoded)
-    password = decoded.decode('ascii')
-    login = credentials()
-    login.usr = username
-    login.pwd = password
-    return login
+   
+    try:
+        # Open file and read in the encrypted password
+        f = open(passFile, 'r')
+        data = f.read().splitlines()
+        f.close()
+        username = data[0]
+        encryption = data[1]
+        # Decode the password and return the plaintext to caller
+        encoded = encryption.encode('ascii')
+        decoded = base64.b64decode(encoded)
+        password = decoded.decode('ascii')
+        login = credentials()
+        login.usr = username
+        login.pwd = password
+        return login
+    except:
+        console.print('Error: Failed to load login credentials.', style='bold red')
+        sys.exit(1)
 
 def importAssets(credentials, asset):
     """
@@ -463,7 +472,11 @@ def main(argv):
     elif os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), argv[1])) == False:
         # Terminate if supplied file is not found in directory
         console.print(f"Error: The file '{argv[1]}' does not exists in the directory. Aborting...", style='bold red')
-        sys.exit
+        sys.exit(1)
+    elif os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'login.txt')) == False:
+        # Terminates if login credentials file is not found in directory
+        console.print("Error: Failed to find login information. Check to see if 'login.txt' exists.", style='bold red')
+        sys.exit(1)
     else:
         console.print('Starting the import process...', style='bold purple')
         # Grab assets from CSV and login information

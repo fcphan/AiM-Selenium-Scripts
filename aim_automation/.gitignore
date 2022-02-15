@@ -1,9 +1,8 @@
 #AIM login credentials
-aim_automation/login.txt
+login.txt
 
-#CSV file
-aim_automation/new_rates.csv
-aim_automation/test_assets.csv
+#CSV files
+*.csv
 
 #Asset docs
 aim_automation/asset_docs/*
@@ -13,3 +12,7 @@ aim_automation/asset_docs/*
 
 #pycache
 __pycache__
+
+#Chromedriver
+chromedriver
+chromedriver.exe
