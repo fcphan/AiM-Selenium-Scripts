@@ -34,7 +34,10 @@ AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
 URL = AIM_TRAINING
 START = 1
 END = 0
-DOCUMENT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'asset_docs/')
+WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+DOCUMENT_FOLDER = os.path.join(WORKING_DIRECTORY, 'asset_docs/')
+UTILS_FOLDER = os.path.join(WORKING_DIRECTORY, 'utils/')
+CSV_FOLDER = os.path.join(WORKING_DIRECTORY, 'csv/')
 
 tags = []
 
@@ -59,7 +62,7 @@ def initializeDriver():
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
         # Create a new driver
-        chromedriver = os.path.join(os.path.dirname(os.getcwd()), 'chromedriver') or os.path.join(os.path.dirname(os.getcwd()), 'chromedriver.exe')
+        chromedriver = os.path.join(UTILS_FOLDER, 'chromedriver')
         driver = webdriver.Chrome(executable_path=chromedriver, options=options)
         driver.set_page_load_timeout(MAX_WAIT)
         driver.set_script_timeout(MAX_WAIT)
@@ -469,19 +472,19 @@ def main(argv):
         console.print(f'Error: Incorrect number of arguments. Supplied {len(argv)-1}/1 argument(s).', style='bold red')
         console.print("Run the following, replacing 'test.csv' with the csv name:", style='bold green')
         console.print("\timport-assets test.csv", style='blue')
-    elif os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), argv[1])) == False:
+    elif os.path.exists(os.path.join(CSV_FOLDER, argv[1])) == False:
         # Terminate if supplied file is not found in directory
         console.print(f"Error: The file '{argv[1]}' does not exists in the directory. Aborting...", style='bold red')
         sys.exit(1)
-    elif os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'login.txt')) == False:
+    elif os.path.exists(os.path.join(UTILS_FOLDER, 'login.txt')) == False:
         # Terminates if login credentials file is not found in directory
         console.print("Error: Failed to find login information. Check to see if 'login.txt' exists.", style='bold red')
         sys.exit(1)
     else:
         console.print('Starting the import process...', style='bold purple')
         # Grab assets from CSV and login information
-        assets = parseCSV(os.path.join(os.path.dirname(os.path.abspath(__file__)), argv[1]))
-        credentials = decodePassword(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'login.txt'))
+        assets = parseCSV(os.path.join(CSV_FOLDER, argv[1]))
+        credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
 
         # Single import
         # asset = assets[0]        

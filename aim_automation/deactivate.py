@@ -33,6 +33,8 @@ AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
 URL = AIM_TRAINING
 END = 0
 START = 1
+WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+UTILS_FOLDER = os.path.join(WORKING_DIRECTORY, 'utils/')
 
 def initializeDriver():
     """
@@ -51,9 +53,10 @@ def initializeDriver():
     options.add_argument('--kiosk-printing')
     options.add_argument('--test-type')
     options.add_argument('--disable-gpu')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     # Create a new driver
-    chromedriver = os.path.join(os.path.dirname(os.getcwd()), 'chromedriver')
+    chromedriver = os.path.join(UTILS_FOLDER, 'chromedriver')
     driver = webdriver.Chrome(executable_path=chromedriver, options=options)
     driver.set_page_load_timeout(MAX_WAIT)
     driver.set_script_timeout(MAX_WAIT)
@@ -479,7 +482,7 @@ def main(argv):
         endDate = datetime.strptime(endDate, '%m-%d-%Y')
         endDate = endDate.strftime("%B %-d %Y")
 
-        credentials = decodePassword(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'login.txt'))
+        credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
         deactivate_employee(credentials, argv[1], argv[2].upper(), endDate)
 
 def cli():

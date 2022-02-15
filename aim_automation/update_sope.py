@@ -31,6 +31,9 @@ AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
 URL = AIM_TRAINING
 START = 1
 END = 0
+WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+UTILS_FOLDER = os.path.join(WORKING_DIRECTORY, 'utils/')
+CSV_FOLDER = os.path.join(WORKING_DIRECTORY, 'csv/')
 
 def initializeDriver():
     """
@@ -49,9 +52,10 @@ def initializeDriver():
     options.add_argument('--kiosk-printing')
     options.add_argument('--test-type')
     options.add_argument('--disable-gpu')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     # Create a new driver
-    chromedriver = os.path.join(os.path.dirname(os.getcwd()), 'chromedriver')
+    chromedriver = os.path.join(UTILS_FOLDER, 'chromedriver')
     driver = webdriver.Chrome(executable_path=chromedriver, options=options)
     driver.set_page_load_timeout(MAX_WAIT)
     driver.set_script_timeout(MAX_WAIT)
@@ -371,8 +375,8 @@ def main(argv):
         console.print("\tupdate-sope 'startDate'", style='blue')
     else:
 
-        data = parseCSV(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'new_rates.csv'))
-        credentials = decodePassword(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'login.txt'))
+        data = parseCSV(os.path.join(CSV_FOLDER, 'new_rates.csv'))
+        credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
 
         startDate = argv[1]
         if '/' in startDate:
