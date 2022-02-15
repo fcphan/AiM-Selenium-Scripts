@@ -1,13 +1,13 @@
 [WIP] Commands
 ===
-*There may be some edge cases that I either did not experience while testing or don't know about. Further modifcations will have to be made to accomodate for them.*
+*There may be some edge cases that I either did not experience while testing or don't know about. Further modifications will have to be made to accommodate for them.*
 
 
 #
 Update SOPE Rates
 #
 "
-End dates the exisiting SOPE rates and creates a new SOPE rate with the updated rate provided from the CSV file.
+End dates the existing SOPE rates and creates a new SOPE rate with the updated rate provided from the CSV file.
 "
 Structure
 ---
