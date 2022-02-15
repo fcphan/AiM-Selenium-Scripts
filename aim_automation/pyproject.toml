@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "aim_automation"
+version = "0.1.0"
+description = ""
+authors = ["Francis Phan <phan5@pdx.edu>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+rich = "^10.13.0"
+selenium = "^4.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[tool.poetry.scripts]
+update-sope-rates = "aim_automation:update_sope.cli"
+deactivate-employee = "aim_automation:deactivate.cli"
+import-assets = "aim_automation:import_assets.cli"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
