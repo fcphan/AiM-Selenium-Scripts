@@ -1,0 +1,19 @@
+#AIM login credentials
+login.txt
+
+#CSV files
+*.csv
+
+#Folders
+asset_docs/*
+utils/*
+csv/*
+
+#Environments
+.venv/
+
+#pycache
+__pycache__
+
+#Tests folder
+tests/
