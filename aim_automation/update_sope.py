@@ -374,7 +374,6 @@ def parseCSV(csvFile):
                 obj.type = row[typeIdx]
                 obj.curRate = row[curIdx]
                 obj.newRate = row[newIdx]
-                obj.difference = row[difInx]
                 SOPEarray.append(obj)
         return SOPEarray
     except:
