@@ -12,6 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait #type: ignore
 from selenium.webdriver.support import expected_conditions as EC #type: ignore
 # Utilities
 import time
+import sys
 import os
 import base64
 import csv
@@ -62,7 +63,6 @@ def initializeDriver():
 
     return driver
 
-
 def decodePassword(passFile):
     """
     Decodes the base64 password so we can use it to login
@@ -93,15 +93,13 @@ def decodePassword(passFile):
     login.pwd = password
     return login
 
-def updateRate(credentials, empName, empODIN, oldRate, newRate, endDate, startDate):
+def updateRate(credentials, emp, endDate, startDate):
     """
     Updates the SOPE rates of the employee by ending the old rate and
     creating a new entry for the new SOPE rate.
     Params:
         credentials <obj> : login credentials
-        empODIN <string> : employee ODIN ID
-        oldRate <string> : current SOPE rate
-        newRate <string> : new SOPE rate being set
+        emp <obj> : employee ODIN ID, current SOPE rate, new SOPE rate being set
         endDate <date> : end date for the old SOPE rate
         startDate <date> : starting date for the new SOPE rate
     Returns:
@@ -118,29 +116,33 @@ def updateRate(credentials, empName, empODIN, oldRate, newRate, endDate, startDa
         Returns:
             None
         """
-        hrLink = driver.find_element(by='id', value='mainForm:menuListMain:HR')
-        hrLink.click()
-        empSearch = driver.find_element(by='id', value='mainForm:menuListMain:search_EMPLOYEE_VIEW')
-        empSearch.click()
-        empTextbox = driver.find_element(by='id', value='mainForm:ae_h_emp_e_shop_person')
-        empTextbox.send_keys(empODIN)
-        empFind = driver.find_element(by='id', value='mainForm:buttonPanel:executeSearch')
-        empFind.click()
-        
-        browseXPATH = '//*[@id="mainForm:browse"]/tbody'
-        browseFlag = driver.find_elements(by='xpath', value=browseXPATH)
-        if not browseFlag:
-            return
-        else:
-            lname, fname = empName.split(', ')
-            rows = browseFlag[0].find_elements(by='xpath', value=f'{browseXPATH}/tr')
-            for r in range(len(rows)):
-                if (driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_lname"]').text.upper() == lname.upper()  and
-                driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_fname"]').text.upper() == fname.upper() and
-                driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_shop_person"]').text == empODIN):
-                    driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_shop_person"]').click()
-                    time.sleep(1)
-                    return
+        try:
+            hrLink = driver.find_element(by='id', value='mainForm:menuListMain:HR')
+            hrLink.click()
+            empSearch = driver.find_element(by='id', value='mainForm:menuListMain:search_EMPLOYEE_VIEW')
+            empSearch.click()
+            empTextbox = driver.find_element(by='id', value='mainForm:ae_h_emp_e_shop_person')
+            empTextbox.send_keys(empODIN)
+            empFind = driver.find_element(by='id', value='mainForm:buttonPanel:executeSearch')
+            empFind.click()
+            
+            browseXPATH = '//*[@id="mainForm:browse"]/tbody'
+            browseFlag = driver.find_elements(by='xpath', value=browseXPATH)
+            if not browseFlag:
+                return
+            else:
+                lname, fname = empName.split(', ')
+                rows = browseFlag[0].find_elements(by='xpath', value=f'{browseXPATH}/tr')
+                for r in range(len(rows)):
+                    if (driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_lname"]').text.upper() == lname.upper()  and
+                    driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_fname"]').text.upper() == fname.upper() and
+                    driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_shop_person"]').text == empODIN):
+                        driver.find_element(by='xpath', value=f'//*[@id="mainForm:browse:{r}:ae_h_emp_e_shop_person"]').click()
+                        time.sleep(1)
+                        return
+        except:
+            console.print(f"An error has occurred when searching for {empODIN}'s Employee Profile.")
+            sys.exit(1)
 
     def datePicker(flag, setDate, path):
         """
@@ -163,145 +165,156 @@ def updateRate(credentials, empName, empODIN, oldRate, newRate, endDate, startDa
             Returns:
                 None
             """
-            for r in range(4,10):
-                for c in range(1,8):
-                    # reset each time or errors occur, not sure why
-                    day = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
-                    dateXPATH = f'{xpath}/tr[{r}]/td[{c}]'
-                    selectedDay = day.find_element(by='xpath',value=dateXPATH)
-                    if(int(selectedDay.text) == datePart and selectedDay.get_attribute('class') != 'dayothermonth'):
-                        console.print('Selecting correct day...', style='blue')
-                        day.find_element(by='xpath',value=dateXPATH).click()
-                        
-                        # Click the done button to finish date entry
-                        doneBtn = driver.find_element(by='xpath',value='//*[@id="mainForm:buttonPanel:done"]')
-                        doneBtn.click()
-                        return
+            try:
+                for r in range(4,10):
+                    for c in range(1,8):
+                        # reset each time or errors occur, not sure why
+                        day = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
+                        dateXPATH = f'{xpath}/tr[{r}]/td[{c}]'
+                        selectedDay = day.find_element(by='xpath',value=dateXPATH)
+                        if(int(selectedDay.text) == datePart and selectedDay.get_attribute('class') != 'dayothermonth'):
+                            console.print('Selecting correct day...', style='blue')
+                            day.find_element(by='xpath',value=dateXPATH).click()
+                            
+                            # Click the done button to finish date entry
+                            doneBtn = driver.find_element(by='xpath',value='//*[@id="mainForm:buttonPanel:done"]')
+                            doneBtn.click()
+                            return
+            except:
+                console.print(f'An error has occurred when trying to set the day.')
+                sys.exit(1)
 
-        dateField = driver.find_element(by='id', value=path)
-        dateField.click()
-        driver.implicitly_wait(MAX_WAIT)
-        xpath = ''
-        # Separate date into parts
-        month, day, year = setDate.split(' ')
-        long_month = month
-        month = list(Calendar.month_name).index(month)
-        day = int(day)
-        year = int(year)
-        # Select input field to modify
-        if flag == START:
-            xpath = '//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:shopPersonRatesGrid"]/tbody/tr[6]/td[2]/div/table/tbody'
-        else:
-            xpath = '//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:shopPersonRatesGrid"]/tbody/tr[7]/td[2]/div/table/tbody'
-        calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
-        # Select date
-        monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
-        if monthLabel.text == f'{long_month} {year}':
-            console.print('Month/Year matches, selecting day...', style='bold green')
-            # Select day
-            dayFinder(xpath, day)
+        try:
+            dateField = driver.find_element(by='id', value=path)
+            dateField.click()
+            driver.implicitly_wait(MAX_WAIT)
+            xpath = ''
+            # Separate date into parts
+            month, day, year = setDate.split(' ')
+            long_month = month
+            month = list(Calendar.month_name).index(month)
+            day = int(day)
+            year = int(year)
+            # Select input field to modify
+            if flag == START:
+                xpath = '//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:shopPersonRatesGrid"]/tbody/tr[6]/td[2]/div/table/tbody'
+            else:
+                xpath = '//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:shopPersonRatesGrid"]/tbody/tr[7]/td[2]/div/table/tbody'
+            calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
+            # Select date
+            monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
+            if monthLabel.text == f'{long_month} {year}':
+                console.print('Month/Year matches, selecting day...', style='bold green')
+                # Select day
+                dayFinder(xpath, day)
 
-        else:
-            console.print('Month/Year does not match, selecting correct date...', style='bold red')
-            label = monthLabel.text.split(' ')
-            mLabel = list(Calendar.month_name).index(label[0])
-            yLabel = int(label[1])
-            # Select the correct year, month, and day values from calendar
-            console.print('Selecting correct year...', style='blue')
-            while yLabel != year:
-                calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
-                driver.implicitly_wait(MAX_WAIT)
-                monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
-                label = monthLabel.text.split(' ')
-                yLabel = int(label[1])
-                if yLabel < year:
-                    calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[1]').click()
-                if yLabel > year:
-                    calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[5]').click()
-            console.print('Selecting correct month...', style='blue')
-            while mLabel != month:
-                calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
-                driver.implicitly_wait(MAX_WAIT)
-                monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
+            else:
+                console.print('Month/Year does not match, selecting correct date...', style='bold red')
                 label = monthLabel.text.split(' ')
                 mLabel = list(Calendar.month_name).index(label[0])
-                if mLabel < month:
-                    calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[4]').click()
-                if mLabel > month:
-                    calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[2]').click()
-            dayFinder(xpath, day)
+                yLabel = int(label[1])
+                # Select the correct year, month, and day values from calendar
+                console.print('Selecting correct year...', style='blue')
+                while yLabel != year:
+                    calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
+                    driver.implicitly_wait(MAX_WAIT)
+                    monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
+                    label = monthLabel.text.split(' ')
+                    yLabel = int(label[1])
+                    if yLabel < year:
+                        calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[1]').click()
+                    if yLabel > year:
+                        calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[5]').click()
+                console.print('Selecting correct month...', style='blue')
+                while mLabel != month:
+                    calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
+                    driver.implicitly_wait(MAX_WAIT)
+                    monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
+                    label = monthLabel.text.split(' ')
+                    mLabel = list(Calendar.month_name).index(label[0])
+                    if mLabel < month:
+                        calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[4]').click()
+                    if mLabel > month:
+                        calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[2]').click()
+                dayFinder(xpath, day)
+        except:
+            console.print(f'An error has occurred when attempting to set the date.')
+            sys.exit(1)
 
+    try:
+        driver = initializeDriver()
+        driver.get(URL)
+        # Log into AiM instance
+        username = driver.find_element(by='name', value='username')
+        username.send_keys(credentials.usr)
+        password = driver.find_element(by='name', value='password')
+        password.send_keys(credentials.pwd)
+        login = driver.find_element(by='id', value='login')
+        login.click()
+        driver.implicitly_wait(MAX_WAIT)
+        # Search for Employee Profile
+        findEmp(emp.employee, emp.ODIN)
+        # Enter Edit Mode
+        editBtn = driver.find_element(by='id', value='mainForm:buttonPanel:edit')
+        editBtn.click()
+        # Open Labor Rates
+        laborRates = driver.find_element(by='id', value='mainForm:sideButtonPanel:moreMenu_3')
+        laborRates.click()
+        # Wait for rates table to load
+        driver.implicitly_wait(10)
+        mainForm = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "mainForm:content")))
+        tableRows = mainForm.find_elements(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList"]/tbody/tr')
+        row = ''
+        # Find SOPE rate row in table
+        for tr in range(len(tableRows)):
+            if mainForm.find_element(by='xpath', value=f'//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:{tr}:ae_l_man_d_labor_class"]').text == 'SOPE':
+                row = tr
+            else:
+                pass
+        # Open SOPE rate
+        SOPElink = driver.find_element(by='xpath', value=f'//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:{row}:seqLink"]')
+        SOPElink.click()
+        # End date old rate
+        driver.implicitly_wait(MAX_WAIT)
+        endPath = 'mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:endDateValue'
+        startPath = 'mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:startDateValue'
+        datePicker(END, endDate, endPath)
+        console.print(f'End Dated previous SOPE rate with the date: {endDate}', style='bold green')
+        time.sleep(2)
+        # Create new SOPE rate line item
+        addBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:addRowButton"]')
+        addBtn.click()
+        driver.implicitly_wait(MAX_WAIT)
+        # Set Time Type
+        timeType = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:timeTypeZoom:level1"]')
+        timeType.send_keys('R')
+        # Set Labor Class
+        laborClass = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:laborClassZoom:level1"]')
+        laborClass.send_keys('SOPE')
+        # Set rate
+        rateField = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:laborRateValue"]')
+        rateField.send_keys(emp.newRate)
+        datePicker(START, startDate, startPath)
+        console.print(f'Start Dated new SOPE rate with the date: {startDate}', style='bold green')
 
-    driver = initializeDriver()
-    driver.get(URL)
-    # Log into AiM instance
-    username = driver.find_element(by='name', value='username')
-    username.send_keys(credentials.usr)
-    password = driver.find_element(by='name', value='password')
-    password.send_keys(credentials.pwd)
-    login = driver.find_element(by='id', value='login')
-    login.click()
-    driver.implicitly_wait(MAX_WAIT)
-    # Search for Employee Profile
-    findEmp(empName, empODIN)
-    # Enter Edit Mode
-    editBtn = driver.find_element(by='id', value='mainForm:buttonPanel:edit')
-    editBtn.click()
-    # Open Labor Rates
-    laborRates = driver.find_element(by='id', value='mainForm:sideButtonPanel:moreMenu_3')
-    laborRates.click()
-    # Wait for rates table to load
-    driver.implicitly_wait(10)
-    mainForm = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "mainForm:content")))
-    tableRows = mainForm.find_elements(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList"]/tbody/tr')
-    row = ''
-    # Find SOPE rate row in table
-    for tr in range(len(tableRows)):
-        if mainForm.find_element(by='xpath', value=f'//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:{tr}:ae_l_man_d_labor_class"]').text == 'SOPE':
-            row = tr
-        else:
-            pass
-    # Open SOPE rate
-    SOPElink = driver.find_element(by='xpath', value=f'//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:{row}:seqLink"]')
-    SOPElink.click()
-    # End date old rate
-    driver.implicitly_wait(MAX_WAIT)
-    endPath = 'mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:endDateValue'
-    startPath = 'mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:startDateValue'
-    datePicker(END, endDate, endPath)
-    console.print(f'End Dated previous SOPE rate with the date: {endDate}', style='bold green')
-    time.sleep(2)
-    # Create new SOPE rate line item
-    addBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:addRowButton"]')
-    addBtn.click()
-    driver.implicitly_wait(MAX_WAIT)
-    # Set Time Type
-    timeType = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:timeTypeZoom:level1"]')
-    timeType.send_keys('R')
-    # Set Labor Class
-    laborClass = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:laborClassZoom:level1"]')
-    laborClass.send_keys('SOPE')
-    # Set rate
-    rateField = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:laborRateValue"]')
-    rateField.send_keys(newRate)
-    datePicker(START, startDate, startPath)
-    console.print(f'Start Dated new SOPE rate with the date: {startDate}', style='bold green')
+        time.sleep(5)
 
-    time.sleep(5)
+        # Save and quit
+        doneBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:done"]')
+        doneBtn.click()
 
-    # Save and quit
-    doneBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:done"]')
-    doneBtn.click()
+        # saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
+        # saveBtn.click()
 
-    # saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
-    # saveBtn.click()
+        # For Testing purposes, click cancel
+        cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
+        cancelBtn.click()
 
-    # For Testing purposes, click cancel
-    cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
-    cancelBtn.click()
-
-    #close Chromedriver connection
-    driver.quit()
+        #close Chromedriver connection
+        driver.quit()
+    except:
+        console.print(f'An error has occurred when attempting to update the SOPE rate for {emp.ODIN}. Abortting...')
+        sys.exit(1)
 
 def parseCSV(csvFile):
     """
@@ -387,8 +400,8 @@ def main(argv):
         startDate = startDate.strftime("%B %-d %Y")
         endDate = endDate.strftime("%B %-d %Y")
 
-        for d in data:
-            updateRate(credentials, d.employee, d.ODIN, d.curRate, d.newRate, endDate, startDate)
+        for employee in data:
+            updateRate(credentials, employee, endDate, startDate)
         
         """Test cases for individual profiles"""
         # updateRate(credentials, 'Huck, Sam', 'SHUCK', '14.37', '15.00', endDate, startDate) #common
