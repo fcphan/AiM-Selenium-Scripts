@@ -166,35 +166,39 @@ def importAssets(credentials, asset):
             sys.exit(1)
 
     def checkAsset(tag):
-        # Open Asset Management Module
-        asset_mgmt = driver.find_element(by='xpath', value='//*[@id="mainForm:menuListMain:ASSETMGT"]')
-        asset_mgmt.click()
-        driver.implicitly_wait(MAX_WAIT)
+        try:
+            # Open Asset Management Module
+            asset_mgmt = driver.find_element(by='xpath', value='//*[@id="mainForm:menuListMain:ASSETMGT"]')
+            asset_mgmt.click()
+            driver.implicitly_wait(MAX_WAIT)
 
-        # Search for Asset Tag
-        search_btn = driver.find_element(by='id', value='mainForm:menuListMain:search_MASTER_ASSET_VIEW')
-        search_btn.click()
-        asset_field = driver.find_element(by='id', value='mainForm:ae_a_asset_e_asset_tag')
-        asset_field.send_keys(tag)
-        execute_btn = driver.find_element(by='id', value='mainForm:buttonPanel:executeSearch')
-        execute_btn.click()
+            # Search for Asset Tag
+            search_btn = driver.find_element(by='id', value='mainForm:menuListMain:search_MASTER_ASSET_VIEW')
+            search_btn.click()
+            asset_field = driver.find_element(by='id', value='mainForm:ae_a_asset_e_asset_tag')
+            asset_field.send_keys(tag)
+            execute_btn = driver.find_element(by='id', value='mainForm:buttonPanel:executeSearch')
+            execute_btn.click()
 
-        # Check if anything exists
-        driver.implicitly_wait(5)
-        mainForm = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "mainForm:content")))
-        results = mainForm.find_elements(by='xpath', value='//*[@id="mainForm:browse"]/tbody')
-        if not results:
-            result = FALSE
-        else:
-            result = TRUE
+            # Check if anything exists
+            driver.implicitly_wait(5)
+            mainForm = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "mainForm:content")))
+            results = mainForm.find_elements(by='xpath', value='//*[@id="mainForm:browse"]/tbody')
+            if not results:
+                result = FALSE
+            else:
+                result = TRUE
 
-        # Return to dashboard and return document ID to main function
-        home = driver.find_element(by='id', value='mainForm:headerInclude:backToDesktopAction1')
-        home.click()
-        driver.implicitly_wait(MAX_WAIT)
+            # Return to dashboard and return document ID to main function
+            home = driver.find_element(by='id', value='mainForm:headerInclude:backToDesktopAction1')
+            home.click()
+            driver.implicitly_wait(MAX_WAIT)
 
-        # Return boolean based on search result
-        return result
+            # Return boolean based on search result
+            return result
+        except:
+            console.print('Error: Failed to check if asset already exists with provided tag.')
+            sys.exit(1)
 
     try:
         # Image ID holder
