@@ -26,10 +26,10 @@ console = Console()
 """Default Parameters"""
 MAX_WAIT = 600
 DRIVER = None
-AIM_PROD = 'go.pdx.edu/aim'
+AIM_PROD = 'https://bedrock.psu.ds.pdx.edu/aim/'
 AIM_TRAINING = 'https://bedrock.psu.ds.pdx.edu:8443/aimtraining/'
 AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
-URL = AIM_TRAINING
+URL = AIM_PROD
 START = 1
 END = 0
 WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -303,12 +303,12 @@ def updateRate(credentials, emp, endDate, startDate):
         doneBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:done"]')
         doneBtn.click()
 
-        # saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
-        # saveBtn.click()
+        saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
+        saveBtn.click()
 
         # For Testing purposes, click cancel
-        cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
-        cancelBtn.click()
+        # cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
+        # cancelBtn.click()
 
         #close Chromedriver connection
         driver.quit()

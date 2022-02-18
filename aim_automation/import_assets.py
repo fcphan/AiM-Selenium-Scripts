@@ -28,7 +28,7 @@ console = Console()
 """Default Parameters"""
 MAX_WAIT = 600
 DRIVER = None
-AIM_PROD = 'go.pdx.edu/aim'
+AIM_PROD = 'https://bedrock.psu.ds.pdx.edu/aim/'
 AIM_TRAINING = 'https://bedrock.psu.ds.pdx.edu:8443/aimtraining/'
 AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
 URL = AIM_TRAINING
