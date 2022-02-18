@@ -382,30 +382,32 @@ def parseCSV(csvFile):
         pass
 
 def main(argv):
-    if len(argv) != 2:
+    if len(argv) != 3:
         console.print(f'Error: Incorrect number of arguments. Supplied {len(argv)-1}/1 arguments.', style='bold red')
-        console.print('Run the following, replacing startDate with the start date for the new rates:', style='bold green')
-        console.print("\tupdate-sope 'startDate'", style='blue')
+        console.print('Run the following, replacing csv with the CSV file containing the SOPE data and startDate with the start date for the new rates:', style='bold green')
+        console.print("\tupdate-sope 'csv' 'startDate'", style='blue')
+    elif os.path.exists(os.path.join(CSV_FOLDER, argv[1])) == False:
+        console.print(f'Error: The provided file {argv[1]} could not be found. Please check if it is located in {CSV_FOLDER}.')
+        sys.exit(1)
     else:
-
-        data = parseCSV(os.path.join(CSV_FOLDER, 'new_rates.csv'))
+        data = parseCSV(os.path.join(CSV_FOLDER, argv[1]))
         credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
 
-        startDate = argv[1]
+        startDate = argv[2]
         if '/' in startDate:
             console.print('Reformatting date...', style='yellow')
             startDate = startDate.replace('/', '-')
         startDate = datetime.strptime(startDate, '%m-%d-%Y')
         endDate = startDate + timedelta(days=-1)
-        startDate = startDate.strftime("%B %-d %Y")
-        endDate = endDate.strftime("%B %-d %Y")
+        startDate = startDate.strftime("%B %d %Y")
+        endDate = endDate.strftime("%B %d %Y")
 
         for employee in data:
             updateRate(credentials, employee, endDate, startDate)
         
         """Test cases for individual profiles"""
         # updateRate(credentials, 'Huck, Sam', 'SHUCK', '14.37', '15.00', endDate, startDate) #common
-        # updateRate(credentials, 'Phan, Francis', 'PHAN5', '14.37', '15.00', endDate, startDate) #unique
+        # updateRate(credentials, data, endDate, startDate) #unique
 
 def cli():
     main(argv)
