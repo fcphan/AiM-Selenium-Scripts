@@ -50,19 +50,20 @@ End dates the existing SOPE rates and creates a new SOPE rate with the updated r
 ### Structure
 
 ```
-update-sope-rates -startDate
+update-sope-rates -csv -startDate
 ```
 
 ### Arguments
 
-| Argument     | Description                                                                          |
-| ------------ | ------------------------------------------------------------------------------------ |
-| `-startDate` | starting date of new SOPE rate in MM-DD-YYYY or MM/DD/YYYY format (ex. '11-20-2021') |
+| Argument     | Description                                                                                                                              |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `-csv`       | name of csv file with new rates [see format here](#sope-rate-format). Enclose in double quotes (") if there are spaces in the file name. |
+| `-startDate` | starting date of new SOPE rate in MM-DD-YYYY or MM/DD/YYYY format (ex. '11-20-2021')                                                     |
 
 ### Example
 
 ```
-update-sope-rates '11-20-2021'
+update-sope-rates new_rates.csv 11-20-2021
 ```
 
 _Note: Replace `new_rates.csv` with the newest csv with SOPE rates before running._
@@ -101,9 +102,9 @@ import-assets -csv
 
 ### Arguments
 
-| Arguments | Description                                                                                                           |
-| --------- | --------------------------------------------------------------------------------------------------------------------- |
-| `-csv`    | Name of the csv file containing asset information. Enclose in double quotes (") if there are spaces in the file name. |
+| Arguments | Description                                                                                                                                                      |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-csv`    | Name of the csv file containing asset information [see format here](#asset-importing-format). Enclose in double quotes (") if there are spaces in the file name. |
 
 ### Examples
 
@@ -111,3 +112,23 @@ import-assets -csv
 import-assets new_assets.csv
 import-assets "new assets.csv"
 ```
+
+# CSV Formatting
+
+Some commands use a specific CSV structure/format in order to parse the data from the file. Find and copy the correct formatting for the command you are attempting to run, replacing the example data with your own.
+
+## SOPE Rate Format
+
+The `update-sope-rates` command's specific formatting:
+
+| Employee Name | ODIN  | Type       | Current Rate | Updated Rate | Start Date |
+| ------------- | ----- | ---------- | ------------ | ------------ | ---------- |
+| Smith, John   | SMITH | CLASSIFIED | $10.00       | $15.00       | 2-18-2022  |
+
+## Asset Importing Format
+
+The `import-assets` command's specific formatting:
+
+| asset_tag | asset_type | asset_group | status_code | description                    | region      | facility    | property   | location | location_id | model | serial_number | extra_description | image_name |
+| --------- | ---------- | ----------- | ----------- | ------------------------------ | ----------- | ----------- | ---------- | -------- | ----------- | ----- | ------------- | ----------------- | ---------- | ---------- |
+| 123456    | SERIALIZED | AUTODOOR    | ACTIVE      | AUTODOOR INTERIOR BUTTON WIRED | REGION_NAME | MAIN CAMPUS | PROPERTY # | 929      |             |       |               |                   |            | 018080.jpg |
