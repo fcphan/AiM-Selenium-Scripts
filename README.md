@@ -129,6 +129,5 @@ The `update-sope-rates` command's specific formatting:
 
 The `import-assets` command's specific formatting:
 
-| asset_tag | asset_type | asset_group | status_code | description                    | region      | facility    | property   | location | location_id | model | serial_number | extra_description | image_name |
-| --------- | ---------- | ----------- | ----------- | ------------------------------ | ----------- | ----------- | ---------- | -------- | ----------- | ----- | ------------- | ----------------- | ---------- | ---------- |
-| 123456    | SERIALIZED | AUTODOOR    | ACTIVE      | AUTODOOR INTERIOR BUTTON WIRED | REGION_NAME | MAIN CAMPUS | PROPERTY # | 929      |             |       |               |                   |            | 018080.jpg |
+| asset_tag | asset_type | asset_group | status_code | description | region | facility | property | location | location_id | model | serial_number | extra_description | image_name |
+| --------- | ---------- | ----------- | ----------- | ----------- | ------ | -------- | -------- | -------- | ----------- | ----- | ------------- | ----------------- | ---------- |
