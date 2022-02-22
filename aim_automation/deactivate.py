@@ -30,7 +30,7 @@ DRIVER = None
 AIM_PROD = 'https://bedrock.psu.ds.pdx.edu/'
 AIM_TRAINING = 'https://bedrock.psu.ds.pdx.edu:8443/aimtraining/'
 AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
-URL = AIM_TRAINING
+URL = AIM_PROD
 END = 0
 START = 1
 WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -316,9 +316,7 @@ def deactivate_employee(credentials, empName, odin, endDate):
                     dateXPATH = f'{xpath}/tr[{r}]/td[{c}]'
                     selectedDay = day.find_element(by='xpath',value=dateXPATH)
                     if(int(selectedDay.text) == datePart and selectedDay.get_attribute('class') != 'dayothermonth'):
-                        console.print('Selecting correct day...', style='blue')
                         day.find_element(by='xpath',value=dateXPATH).click()
-                        
                         # Click the done button to finish date entry
                         doneBtn = driver.find_element(by='xpath',value='//*[@id="mainForm:buttonPanel:done"]')
                         doneBtn.click()
@@ -343,17 +341,14 @@ def deactivate_employee(credentials, empName, odin, endDate):
         # Select date
         monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
         if monthLabel.text == f'{long_month} {year}':
-            console.print('Month/Year matches, selecting day...', style='bold green')
             # Select day
             dayFinder(xpath, day)
 
         else:
-            console.print('Month/Year does not match, selecting correct date...', style='bold red')
             label = monthLabel.text.split(' ')
             mLabel = list(Calendar.month_name).index(label[0])
             yLabel = int(label[1])
             # Select the correct year, month, and day values from calendar
-            console.print('Selecting correct year...', style='blue')
             while yLabel != year:
                 calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
                 driver.implicitly_wait(MAX_WAIT)
@@ -364,7 +359,6 @@ def deactivate_employee(credentials, empName, odin, endDate):
                     calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[1]').click()
                 if yLabel > year:
                     calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[5]').click()
-            console.print('Selecting correct month...', style='blue')
             while mLabel != month:
                 calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
                 driver.implicitly_wait(MAX_WAIT)
@@ -480,7 +474,7 @@ def main(argv):
             console.print('Reformatting date...', style='yellow')
             endDate = endDate.replace('/', '-')
         endDate = datetime.strptime(endDate, '%m-%d-%Y')
-        endDate = endDate.strftime("%B %-d %Y")
+        endDate = endDate.strftime("%B %d %Y")
 
         credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
         deactivate_employee(credentials, argv[1], argv[2].upper(), endDate)

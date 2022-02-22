@@ -173,9 +173,7 @@ def updateRate(credentials, emp, endDate, startDate):
                         dateXPATH = f'{xpath}/tr[{r}]/td[{c}]'
                         selectedDay = day.find_element(by='xpath',value=dateXPATH)
                         if(int(selectedDay.text) == datePart and selectedDay.get_attribute('class') != 'dayothermonth'):
-                            console.print('Selecting correct day...', style='blue')
                             day.find_element(by='xpath',value=dateXPATH).click()
-                            
                             # Click the done button to finish date entry
                             doneBtn = driver.find_element(by='xpath',value='//*[@id="mainForm:buttonPanel:done"]')
                             doneBtn.click()
@@ -204,17 +202,14 @@ def updateRate(credentials, emp, endDate, startDate):
             # Select date
             monthLabel = calendar.find_element(by='xpath', value=f'{xpath}/tr[1]/td')
             if monthLabel.text == f'{long_month} {year}':
-                console.print('Month/Year matches, selecting day...', style='bold green')
                 # Select day
                 dayFinder(xpath, day)
 
             else:
-                console.print('Month/Year does not match, selecting correct date...', style='bold red')
                 label = monthLabel.text.split(' ')
                 mLabel = list(Calendar.month_name).index(label[0])
                 yLabel = int(label[1])
                 # Select the correct year, month, and day values from calendar
-                console.print('Selecting correct year...', style='blue')
                 while yLabel != year:
                     calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
                     driver.implicitly_wait(MAX_WAIT)
@@ -225,7 +220,6 @@ def updateRate(credentials, emp, endDate, startDate):
                         calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[1]').click()
                     if yLabel > year:
                         calendar.find_element(by='xpath',value=f'{xpath}/tr[2]/td[5]').click()
-                console.print('Selecting correct month...', style='blue')
                 while mLabel != month:
                     calendar = WebDriverWait(driver, MAX_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
                     driver.implicitly_wait(MAX_WAIT)
@@ -279,7 +273,6 @@ def updateRate(credentials, emp, endDate, startDate):
         endPath = 'mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:endDateValue'
         startPath = 'mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:startDateValue'
         datePicker(END, endDate, endPath)
-        console.print(f'End Dated previous SOPE rate with the date: {endDate}', style='bold green')
         time.sleep(2)
         # Create new SOPE rate line item
         addBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:addRowButton"]')
@@ -295,9 +288,7 @@ def updateRate(credentials, emp, endDate, startDate):
         rateField = driver.find_element(by='xpath', value='//*[@id="mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:laborRateValue"]')
         rateField.send_keys(emp.newRate)
         datePicker(START, startDate, startPath)
-        console.print(f'Start Dated new SOPE rate with the date: {startDate}', style='bold green')
-
-        time.sleep(5)
+        time.sleep(2)
 
         # Save and quit
         doneBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:done"]')
@@ -313,7 +304,7 @@ def updateRate(credentials, emp, endDate, startDate):
         #close Chromedriver connection
         driver.quit()
     except:
-        console.print(f'An error has occurred when attempting to update the SOPE rate for {emp.ODIN}. Abortting...')
+        console.print(f'An error has occurred when attempting to update the SOPE rate for {emp.ODIN}. Abortting...', style='bold red')
         sys.exit(1)
 
 def parseCSV(csvFile):
@@ -361,7 +352,7 @@ def parseCSV(csvFile):
         typeIdx = fields.index('Type')
         curIdx = fields.index('Current Rate')
         newIdx = fields.index('Updated Rate')
-        difInx = fields.index('Difference')
+        # difInx = fields.index('Difference')
 
         obj = None
         for row in rows:
@@ -378,11 +369,11 @@ def parseCSV(csvFile):
         return SOPEarray
     except:
         console.print('An error has occurred while reading the CSV file.', style='bold red')
-        pass
+        sys.exit(1)
 
 def main(argv):
     if len(argv) != 3:
-        console.print(f'Error: Incorrect number of arguments. Supplied {len(argv)-1}/1 arguments.', style='bold red')
+        console.print(f'Error: Incorrect number of arguments. Supplied {len(argv)-1}/2 arguments.', style='bold red')
         console.print('Run the following, replacing csv with the CSV file containing the SOPE data and startDate with the start date for the new rates:', style='bold green')
         console.print("\tupdate-sope 'csv' 'startDate'", style='blue')
     elif os.path.exists(os.path.join(CSV_FOLDER, argv[1])) == False:
@@ -403,6 +394,7 @@ def main(argv):
 
         for employee in data:
             updateRate(credentials, employee, endDate, startDate)
+            console.print(f'Updated {employee.ODIN}\'s rate to {employee.newRate}')
         
         """Test cases for individual profiles"""
         # updateRate(credentials, 'Huck, Sam', 'SHUCK', '14.37', '15.00', endDate, startDate) #common
