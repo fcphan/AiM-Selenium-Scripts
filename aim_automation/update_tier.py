@@ -235,7 +235,18 @@ def updateRate(credentials, emp, odin, rates, startDate, endDate):
             console.print(f'An error has occurred when attempting to set the date.', style='bold red')
             sys.exit(1)
 
-    def endDateRates(base, overtime, oncall, sope, rates, endDate):
+    def endDateRates(base, overtime, oncall, sope, endDate):
+        """
+        Wrapper function which will end date all of the current tier's rates.
+        Params:
+            base <string> : Row number of base rate
+            overtime <string> : Row number of overtime rate
+            oncall <string> : Row number of oncall rate
+            sope <string> : Row number of sope rate
+            endDate <string> : Date used to set the end of the old rate
+        Returns:
+            None
+        """
         try:
             endDateRate(f'//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:{base}:seqLink"]', endDate)
             endDateRate(f'//*[@id="mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:{overtime}:seqLink"]', endDate)
@@ -248,6 +259,11 @@ def updateRate(credentials, emp, odin, rates, startDate, endDate):
     def endDateRate(xpath, endDate):
         """
         End date the rate linked to the provided xpath
+        Params:
+            xpath <string> : XPath to the line item link
+            endDate <string> : Date used to set the end of the old rate
+        Returns:
+            None
         """
         rateLink = driver.find_element(by='xpath', value=xpath)
         rateLink.click()
@@ -256,6 +272,14 @@ def updateRate(credentials, emp, odin, rates, startDate, endDate):
         datePicker(END, endDate, endPath)
 
     def setNewRates(rates, startDate):
+        """
+        Wrapper function that sets all of the new rates.
+        Params:
+            rates <obj> : Object containing all calculated rates
+            startDate <string> : Starting date of the new rates
+        Returns:
+            None
+        """
         # Set new rates
         setNewRate('R', 'I', rates.base, startDate)
         setNewRate('OT', 'I', rates.overtime, startDate)
@@ -264,6 +288,16 @@ def updateRate(credentials, emp, odin, rates, startDate, endDate):
             setNewRate('R', 'SOPE', rates.SOPE, startDate)
 
     def setNewRate(time_type, labor_class, rate, startDate):
+        """
+        Sets the new labor rates by specifying the type and class.
+        Params:
+            time_type <string> : Type of time (Regular, Overtime, On Call)
+            labor_class <string> : Labor classification (typically only I or SOPE)
+            rates <obj> : Object containing all of the new calculated rates
+            startDate <string> : Starting date of the new rates
+        Returns:
+            None
+        """
         try:
             startPath = 'mainForm:SHOP_PERSON_RATES_ITEM_EDIT_content:startDateValue'
             addBtn = driver.find_element(by='id', value='mainForm:SHOP_PERSON_RATES_EDIT_content:shopPersonRatesList:addRowButton')
@@ -326,7 +360,7 @@ def updateRate(credentials, emp, odin, rates, startDate, endDate):
                 else:
                     pass
         # End date rates
-        endDateRates(base_row, overtime_row, oncall_row, sope_row, rates, endDate)
+        endDateRates(base_row, overtime_row, oncall_row, sope_row, endDate)
         time.sleep(2)
         setNewRates(rates, startDate)
         time.sleep(10)
@@ -416,7 +450,7 @@ def main(argv):
     # Get login information
     credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
 
-    updateRate(credentials, args.name, args.ODIN, rates, startDate, endDate)
+    updateRate(credentials, args.name, args.ODIN.upper(), rates, startDate, endDate)
 
 def cli():
     main(argv)
