@@ -88,7 +88,9 @@ deactivate-employee -name -odin -endDate
 
 ### Example
 
-`deactivate-employee 'Smith, John' SMITH2 '11-20-2021'`
+```
+deactivate-employee "Smith, John" SMITH2 11-20-2021
+```
 
 ## Import Assets
 
@@ -111,6 +113,32 @@ import-assets -csv
 ```
 import-assets new_assets.csv
 import-assets "new assets.csv"
+```
+
+## Updating Labor Tier
+
+End dates the current set rates and creates new labor rates based on the provided tier's base rate. Has the optional ability to update the SOPE rate in the same pass if provided.
+
+### Structure
+
+```
+update-tier -n NAME -o ODIN -d STARTDATE -t TIER [-s SOPE]
+```
+
+### Arguments
+
+| Argument  | Description                                                          |
+| --------- | -------------------------------------------------------------------- |
+| NAME      | Last and first name of employee formatted as "Last name, First name" |
+| ODIN      | Employee's ODIN ID                                                   |
+| STARTDATE | Starting date of the new rates                                       |
+| SOPE      | (Optional) New SOPE rate                                             |
+
+### Examples
+
+```
+update-tier -n "Smith, John" -o SMITH -d 2/25/2022 -t 36
+update-tier -n "Smith, John" -o SMITH -d 2/25/2022 -t 36 -s 42.43
 ```
 
 # CSV Formatting
