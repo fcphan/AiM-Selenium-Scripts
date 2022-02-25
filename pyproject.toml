@@ -13,6 +13,7 @@ selenium = "^4.0.0"
 pytest = "^5.2"
 
 [tool.poetry.scripts]
+update-tier = "aim_automation:update_tier.cli"
 update-sope-rates = "aim_automation:update_sope.cli"
 deactivate-employee = "aim_automation:deactivate.cli"
 import-assets = "aim_automation:import_assets.cli"
