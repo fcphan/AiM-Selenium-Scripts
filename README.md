@@ -157,5 +157,6 @@ The `update-sope-rates` command's specific formatting:
 
 The `import-assets` command's specific formatting:
 
-| asset_tag | asset_type | asset_group | status_code | description | region | facility | property | location | location_id | model | serial_number | extra_description | image_name |
-| --------- | ---------- | ----------- | ----------- | ----------- | ------ | -------- | -------- | -------- | ----------- | ----- | ------------- | ----------------- | ---------- |
+| asset_tag | asset_type | asset_group | status_code | description           | region | facility | property | location | location_id | model   | serial_number | extra_description | image_name |
+| --------- | ---------- | ----------- | ----------- | --------------------- | ------ | -------- | -------- | -------- | ----------- | ------- | ------------- | ----------------- | ---------- |
+| 000000    | SERIALIZED | AUTODOOR    | ACTIVE      | Automatic door button | REGION | FACILITY | PROPERTY | LOCATION | LOCATION_ID | MODEL # | SERIAL #      | EXTRA_DESC        | IMG_NAME   |
