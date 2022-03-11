@@ -50,20 +50,20 @@ End dates the existing SOPE rates and creates a new SOPE rate with the updated r
 ### Structure
 
 ```
-update-sope-rates -csv -startDate
+update-sope-rates -c "CSV" -d startDate
 ```
 
 ### Arguments
 
-| Argument     | Description                                                                                                                              |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `-csv`       | name of csv file with new rates [see format here](#sope-rate-format). Enclose in double quotes (") if there are spaces in the file name. |
-| `-startDate` | starting date of new SOPE rate in MM-DD-YYYY or MM/DD/YYYY format (ex. '11-20-2021')                                                     |
+| Argument    | Description                                                                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `csv`       | name of csv file with new rates [see format here](#sope-rate-format). Enclose in double quotes (") if there are spaces in the file name. |
+| `startDate` | starting date of new SOPE rate in MM-DD-YYYY or MM/DD/YYYY format (ex. '11-20-2021')                                                     |
 
 ### Example
 
 ```
-update-sope-rates new_rates.csv 11-20-2021
+update-sope-rates -c "new_rates.csv" -d 11-20-2021
 ```
 
 _Note: Replace `new_rates.csv` with the newest csv with SOPE rates before running._
@@ -75,21 +75,21 @@ Deactivates an employee's User Record, Requestor, Employee Profile, and end date
 ### Structure
 
 ```
-deactivate-employee -name -odin -endDate
+deactivate-employee -n "name" -o odin -d endDate
 ```
 
 ### Arguments
 
-| Argument   | Description                                                            |
-| ---------- | ---------------------------------------------------------------------- |
-| `-name`    | Employee's name in "Last, First" format (ex. 'Smith, John')            |
-| `-odin`    | Employee's ODIN ID (ex. SMITH2)                                        |
-| `-endDate` | last working day in MM-DD-YYYY or MM/DD/YYYY format (ex. '11-20-2021') |
+| Argument  | Description                                                            |
+| --------- | ---------------------------------------------------------------------- |
+| `name`    | Employee's name in "Last, First" format (ex. 'Smith, John')            |
+| `odin`    | Employee's ODIN ID (ex. SMITH2)                                        |
+| `endDate` | last working day in MM-DD-YYYY or MM/DD/YYYY format (ex. '11-20-2021') |
 
 ### Example
 
 ```
-deactivate-employee "Smith, John" SMITH2 11-20-2021
+deactivate-employee -n "Smith, John" -o SMITH2 -d 11-20-2021
 ```
 
 ## Import Assets
@@ -99,20 +99,20 @@ Imports a list of assets from a CSV file, as well as any documents (images) asso
 ### Structure
 
 ```
-import-assets -csv
+import-assets -c csv
 ```
 
 ### Arguments
 
 | Arguments | Description                                                                                                                                                      |
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-csv`    | Name of the csv file containing asset information [see format here](#asset-importing-format). Enclose in double quotes (") if there are spaces in the file name. |
+| `csv`     | Name of the csv file containing asset information [see format here](#asset-importing-format). Enclose in double quotes (") if there are spaces in the file name. |
 
 ### Examples
 
 ```
-import-assets new_assets.csv
-import-assets "new assets.csv"
+import-assets -c new_assets.csv
+import-assets -c "new assets.csv"
 ```
 
 ## Updating Labor Tier
