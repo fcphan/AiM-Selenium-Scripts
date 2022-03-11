@@ -18,6 +18,7 @@ import base64
 import csv
 import calendar as Calendar
 from sys import argv
+import argparse
 from datetime import date, datetime, timedelta
 from rich.console import Console #type: ignore
 
@@ -29,7 +30,7 @@ DRIVER = None
 AIM_PROD = 'https://bedrock.psu.ds.pdx.edu/aim/'
 AIM_TRAINING = 'https://bedrock.psu.ds.pdx.edu:8443/aimtraining/'
 AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
-URL = AIM_PROD
+URL = AIM_TRAINING
 START = 1
 END = 0
 WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -372,33 +373,35 @@ def parseCSV(csvFile):
         sys.exit(1)
 
 def main(argv):
-    if len(argv) != 3:
-        console.print(f'Error: Incorrect number of arguments. Supplied {len(argv)-1}/2 arguments.', style='bold red')
-        console.print('Run the following, replacing csv with the CSV file containing the SOPE data and startDate with the start date for the new rates:', style='bold green')
-        console.print("\tupdate-sope 'csv' 'startDate'", style='blue')
-    elif os.path.exists(os.path.join(CSV_FOLDER, argv[1])) == False:
-        console.print(f'Error: The provided file {argv[1]} could not be found. Please check if it is located in {CSV_FOLDER}.')
+    # Set up command line parser with requirements
+    parser = argparse.ArgumentParser(description='Updates employee\'s SOPE rates from spreadsheet.')
+    parser.add_argument('-c', '--CSV', help='CSV containing updated rate infomation.', required=True)
+    parser.add_argument('-d', '--startDate', help='Activation date for the new rates', required=True)
+    args = parser.parse_args()
+
+    if os.path.exists(os.path.join(CSV_FOLDER, args.CSV)) == False:
+        console.print(f'Error: The provided file {args.CSV} could not be found. Please check if it is located in {CSV_FOLDER}.')
         sys.exit(1)
-    else:
-        data = parseCSV(os.path.join(CSV_FOLDER, argv[1]))
-        credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
 
-        startDate = argv[2]
-        if '/' in startDate:
-            console.print('Reformatting date...', style='yellow')
-            startDate = startDate.replace('/', '-')
-        startDate = datetime.strptime(startDate, '%m-%d-%Y')
-        endDate = startDate + timedelta(days=-1)
-        startDate = startDate.strftime("%B %d %Y")
-        endDate = endDate.strftime("%B %d %Y")
+    data = parseCSV(os.path.join(CSV_FOLDER, args.CSV))
+    credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
 
-        for employee in data:
-            updateRate(credentials, employee, endDate, startDate)
-            console.print(f'Updated {employee.ODIN}\'s rate to {employee.newRate}')
+    startDate = args.startDate
+    if '/' in startDate:
+        console.print('Reformatting date...', style='yellow')
+        startDate = startDate.replace('/', '-')
+    startDate = datetime.strptime(startDate, '%m-%d-%Y')
+    endDate = startDate + timedelta(days=-1)
+    startDate = startDate.strftime("%B %d %Y")
+    endDate = endDate.strftime("%B %d %Y")
+
+    for employee in data:
+        updateRate(credentials, employee, endDate, startDate)
+        console.print(f'Updated {employee.ODIN}\'s rate to {employee.newRate}')
         
-        """Test cases for individual profiles"""
-        # updateRate(credentials, 'Huck, Sam', 'SHUCK', '14.37', '15.00', endDate, startDate) #common
-        # updateRate(credentials, data, endDate, startDate) #unique
+    """Test cases for individual profiles"""
+    # updateRate(credentials, 'Huck, Sam', 'SHUCK', '14.37', '15.00', endDate, startDate) #common
+    # updateRate(credentials, data, endDate, startDate) #unique
 
 def cli():
     main(argv)

@@ -20,6 +20,7 @@ import base64
 import csv
 import calendar as Calendar
 from sys import argv
+import argparse
 from datetime import date, datetime, timedelta
 from rich.console import Console #type: ignore
 
@@ -181,7 +182,7 @@ def importAssets(credentials, asset):
             execute_btn.click()
 
             # Check if anything exists
-            driver.implicitly_wait(5)
+            driver.implicitly_wait(3)
             mainForm = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "mainForm:content")))
             results = mainForm.find_elements(by='xpath', value='//*[@id="mainForm:browse"]/tbody')
             if not results:
@@ -471,40 +472,35 @@ def main(argv):
         env <string> : AiM environment to test on
         csv <string> : CSV containing the assets being uploaded
     """
-    # Parse Command Line arguments
-    if len(argv) != 2:
-        console.print(f'Error: Incorrect number of arguments. Supplied {len(argv)-1}/1 argument(s).', style='bold red')
-        console.print("Run the following, replacing 'test.csv' with the csv name:", style='bold green')
-        console.print("\timport-assets test.csv", style='blue')
-    elif os.path.exists(os.path.join(CSV_FOLDER, argv[1])) == False:
+    # Set up command line parser with requirements
+    parser = argparse.ArgumentParser(description='Import new assets from provided spreadsheet.')
+    parser.add_argument('-c', '--CSV', help='CSV containing new asset infomation.', required=True)
+    args = parser.parse_args()
+    
+    if os.path.exists(os.path.join(CSV_FOLDER, args.CSV)) == False:
         # Terminate if supplied file is not found in directory
-        console.print(f"Error: The file '{argv[1]}' does not exists in the directory. Aborting...", style='bold red')
+        console.print(f"Error: The file '{args.CSV}' does not exists in the directory. Aborting...", style='bold red')
         sys.exit(1)
-    elif os.path.exists(os.path.join(UTILS_FOLDER, 'login.txt')) == False:
-        # Terminates if login credentials file is not found in directory
-        console.print("Error: Failed to find login information. Check to see if 'login.txt' exists.", style='bold red')
-        sys.exit(1)
-    else:
-        console.print('Starting the import process...', style='bold purple')
-        # Grab assets from CSV and login information
-        assets = parseCSV(os.path.join(CSV_FOLDER, argv[1]))
-        credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
 
-        # Single import
-        # asset = assets[0]        
-        # importAssets(credentials, asset)
+    console.print('Starting the import process...', style='bold purple')
+    # Grab assets from CSV and login information
+    assets = parseCSV(os.path.join(CSV_FOLDER, args.CSV))
+    credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
+
+    # Single import
+    # asset = assets[0]        
+    # importAssets(credentials, asset)
             
-        # Mass import
-        for asset in assets:
-            # print(asset)
-            importAssets(credentials, asset)
-            # Print asset tag and description for tracking purposes
-            console.print(f'Added new asset: {tags[-1]} - {asset.description}')
+    # Mass import
+    for asset in assets:
+        importAssets(credentials, asset)
+        # Print asset tag and description for tracking purposes
+        console.print(f'Added new asset: {tags[-1]} - {asset.description}')
         
-        # Print list of assets successfully imported
-        if tags:
-            console.print('Finished adding new assets.', style='bold green')
-            console.print(f'New assets are as follows: {", ".join(tags)}')
+    # Print list of assets successfully imported
+    if tags:
+        console.print('Finished adding new assets.', style='bold green')
+        console.print(f'New assets are as follows: {", ".join(tags)}')
 
 def cli():
     main(argv)

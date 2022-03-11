@@ -19,6 +19,7 @@ import os
 import base64
 import calendar as Calendar
 from sys import argv
+import argparse
 from datetime import date, datetime, timedelta
 from rich.console import Console #type: ignore
 
@@ -30,7 +31,7 @@ DRIVER = None
 AIM_PROD = 'https://bedrock.psu.ds.pdx.edu/'
 AIM_TRAINING = 'https://bedrock.psu.ds.pdx.edu:8443/aimtraining/'
 AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
-URL = AIM_PROD
+URL = AIM_TRAINING
 END = 0
 START = 1
 WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -200,12 +201,12 @@ def deactivate_employee(credentials, empName, odin, endDate):
         time.sleep(1)
 
         # Cancel Button
-        # cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
-        # cancelBtn.click()
+        cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
+        cancelBtn.click()
 
         # Save Button
-        saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
-        saveBtn.click()
+        # saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
+        # saveBtn.click()
 
         # Return to WorkDesk
         home = driver.find_element(by='id', value='mainForm:headerInclude:backToDesktopAction1')
@@ -237,12 +238,12 @@ def deactivate_employee(credentials, empName, odin, endDate):
             time.sleep(1)
 
             # Cancel button
-            # cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
-            # cancelBtn.click()
+            cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
+            cancelBtn.click()
 
             # Save button
-            saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
-            saveBtn.click()
+            # saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
+            # saveBtn.click()
         driver.implicitly_wait(10)
         # Return to WorkDesk
         home = driver.find_element(by='id', value='mainForm:headerInclude:backToDesktopAction1')
@@ -417,18 +418,18 @@ def deactivate_employee(credentials, empName, odin, endDate):
         time.sleep(3)
 
         # Save changes
-        saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
-        saveBtn.click()
+        # saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
+        # saveBtn.click()
 
-        # If error modal pops up, hit yes
-        errorModal = driver.find_elements(by='id', value='softErrorList')
-        if len(errorModal) != 0:
-            yesBtn = driver.find_element(by='id', value='mainForm:buttonControls:yes')
-            yesBtn.click()
+        # # If error modal pops up, hit yes
+        # errorModal = driver.find_elements(by='id', value='softErrorList')
+        # if len(errorModal) != 0:
+        #     yesBtn = driver.find_element(by='id', value='mainForm:buttonControls:yes')
+        #     yesBtn.click()
 
         # For Testing purposes, click cancel
-        # cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
-        # cancelBtn.click()
+        cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
+        cancelBtn.click()
 
     def end_date_rate(xpath):
         """
@@ -464,20 +465,22 @@ def deactivate_employee(credentials, empName, odin, endDate):
     driver.quit()
 
 def main(argv):
-    if len(argv) != 4:
-        console.print(f'Error: Incorrect number of arguments. Supplied {len(argv)-1}/3 arguments.', style='bold red')
-        console.print("Run the following, replacing lastName, firstName with the employee's name, ODIN with the employee's ODIN,\nand endDate with the employee's last date:", style='bold green')
-        console.print("\tdeactivate-employee 'lastName, firstName' 'ODIN' 'endDate'", style='blue')
-    else:
-        endDate = argv[3]
-        if '/' in endDate:
-            console.print('Reformatting date...', style='yellow')
-            endDate = endDate.replace('/', '-')
-        endDate = datetime.strptime(endDate, '%m-%d-%Y')
-        endDate = endDate.strftime("%B %d %Y")
+    # Set up command line parser with requirements
+    parser = argparse.ArgumentParser(description='Deactivates an employee completely. Includes User Security, Labor Rates, and Employee Profile.')
+    parser.add_argument('-n', '--name', help='Employee\'s lastName, firstName enclosed in quotation marks, comma separated.', required=True)
+    parser.add_argument('-o', '--ODIN', help='Employee\'s ODIN', required=True)
+    parser.add_argument('-d', '--endDate', help='Employee\'s last working day', required=True)
+    args = parser.parse_args()
 
-        credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
-        deactivate_employee(credentials, argv[1], argv[2].upper(), endDate)
+    endDate = args.endDate
+    if '/' in endDate:
+        console.print('Reformatting date...', style='yellow')
+        endDate = endDate.replace('/', '-')
+    endDate = datetime.strptime(endDate, '%m-%d-%Y')
+    endDate = endDate.strftime("%B %d %Y")
+
+    credentials = decodePassword(os.path.join(UTILS_FOLDER, 'login.txt'))
+    deactivate_employee(credentials, args.name, args.ODIN.upper(), endDate)
 
 def cli():
     main(argv)
