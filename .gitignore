@@ -10,6 +10,7 @@ aim_automation/csv/*
 !aim_automation/asset_docs/.gitkeep
 !aim_automation/utils/.gitkeep
 !aim_automation/csv/.gitkeep
+!aim_automation/csv/*Template.csv
 #Environments
 .venv/
 

@@ -72,6 +72,8 @@ _Note: Replace `new_rates.csv` with the newest csv with SOPE rates before runnin
 
 Deactivates an employee's User Record, Requestor, Employee Profile, and end dates any Labor Rates.
 
+_Note: Make sure that the requestor has no work orders that are still open, as you cannot deactivate them if that is the case._
+
 ### Structure
 
 ```
