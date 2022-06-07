@@ -31,7 +31,7 @@ DRIVER = None
 AIM_PROD = 'https://bedrock.psu.ds.pdx.edu/'
 AIM_TRAINING = 'https://bedrock.psu.ds.pdx.edu:8443/aimtraining/'
 AIM_TEST = 'aimtest.fpm.pdx.edu' #kinda janky
-URL = AIM_TRAINING
+URL = AIM_PROD
 END = 0
 START = 1
 WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -172,6 +172,7 @@ def deactivate_employee(credentials, empName, odin, endDate):
                     role = driver.find_element(by='xpath', value=f'//*[@id="mainForm:USER_ADMIN_EDIT_content:oldRoleList:{r}:ae_authz_principal_role_id_link"]')
                     roleList.append(role.text)
         # Open Roles list and untick assigned roles and tick NONE role
+        print(roleList)
         time.sleep(1)
         driver.implicitly_wait(5)
         loadRoles = driver.find_element(by='xpath', value='//*[@id="mainForm:USER_ADMIN_EDIT_content:oldRoleList:link"]')
@@ -182,7 +183,7 @@ def deactivate_employee(credentials, empName, odin, endDate):
             role = driver.find_element(by='id', value=f'mainForm:ZOOM_ROLE_MULTI_SELECT_content:allRolesList:{r}:ae_authz_role_id')
             if role.text in roleList or role.text == 'NONE':
                 roleCheckbox = driver.find_element(by='id', value=f'mainForm:ZOOM_ROLE_MULTI_SELECT_content:allRolesList:{r}:check')
-                roleCheckbox.click()
+                roleCheckbox.send_keys(Keys.SPACE)
         doneBtn = driver.find_element(by='id', value='mainForm:buttonPanel:done')
         doneBtn.click()
         time.sleep(1)
@@ -201,12 +202,12 @@ def deactivate_employee(credentials, empName, odin, endDate):
         time.sleep(1)
 
         # Cancel Button
-        cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
-        cancelBtn.click()
+        # cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
+        # cancelBtn.click()
 
         # Save Button
-        # saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
-        # saveBtn.click()
+        saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
+        saveBtn.click()
 
         # Return to WorkDesk
         home = driver.find_element(by='id', value='mainForm:headerInclude:backToDesktopAction1')
@@ -238,12 +239,12 @@ def deactivate_employee(credentials, empName, odin, endDate):
             time.sleep(1)
 
             # Cancel button
-            cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
-            cancelBtn.click()
+            # cancelBtn = driver.find_element(by='id', value='mainForm:buttonPanel:cancel')
+            # cancelBtn.click()
 
             # Save button
-            # saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
-            # saveBtn.click()
+            saveBtn = driver.find_element(by='id', value='mainForm:buttonPanel:save')
+            saveBtn.click()
         driver.implicitly_wait(10)
         # Return to WorkDesk
         home = driver.find_element(by='id', value='mainForm:headerInclude:backToDesktopAction1')
@@ -418,18 +419,18 @@ def deactivate_employee(credentials, empName, odin, endDate):
         time.sleep(3)
 
         # Save changes
-        # saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
-        # saveBtn.click()
+        saveBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:save"]')
+        saveBtn.click()
 
-        # # If error modal pops up, hit yes
-        # errorModal = driver.find_elements(by='id', value='softErrorList')
-        # if len(errorModal) != 0:
-        #     yesBtn = driver.find_element(by='id', value='mainForm:buttonControls:yes')
-        #     yesBtn.click()
+        # If error modal pops up, hit yes
+        errorModal = driver.find_elements(by='id', value='softErrorList')
+        if len(errorModal) != 0:
+            yesBtn = driver.find_element(by='id', value='mainForm:buttonControls:yes')
+            yesBtn.click()
 
         # For Testing purposes, click cancel
-        cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
-        cancelBtn.click()
+        # cancelBtn = driver.find_element(by='xpath', value='//*[@id="mainForm:buttonPanel:cancel"]')
+        # cancelBtn.click()
 
     def end_date_rate(xpath):
         """
